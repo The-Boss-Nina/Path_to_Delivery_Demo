@@ -1,0 +1,42 @@
+CXX      = g++
+CXXFLAGS = -Wall -I./include $(shell pkg-config --cflags sdl2 SDL2_image SDL2_mixer SDL2_ttf)
+LIBS     = $(shell pkg-config --libs sdl2 SDL2_image SDL2_mixer SDL2_ttf)
+
+TARGET   = Game
+SRC_DIR  = src
+
+SRCS = $(SRC_DIR)/main.cpp \
+       $(SRC_DIR)/Game.cpp \
+       $(SRC_DIR)/State.cpp \
+       $(SRC_DIR)/StageState.cpp \
+       $(SRC_DIR)/VehicleSelectState.cpp \
+       $(SRC_DIR)/Music.cpp \
+       $(SRC_DIR)/Sound.cpp \
+       $(SRC_DIR)/Sprite.cpp \
+       $(SRC_DIR)/Vec2.cpp \
+       $(SRC_DIR)/Rect.cpp \
+       $(SRC_DIR)/Component.cpp \
+       $(SRC_DIR)/GameObject.cpp \
+       $(SRC_DIR)/SpriteRenderer.cpp \
+       $(SRC_DIR)/Animation.cpp \
+       $(SRC_DIR)/Animator.cpp \
+       $(SRC_DIR)/TileSet.cpp \
+       $(SRC_DIR)/TileMap.cpp \
+       $(SRC_DIR)/Resources.cpp \
+       $(SRC_DIR)/Camera.cpp \
+       $(SRC_DIR)/Timer.cpp \
+       $(SRC_DIR)/InputManager.cpp \
+       $(SRC_DIR)/DeliveryPlayer.cpp
+
+all: $(TARGET)
+
+$(TARGET): $(SRCS)
+	$(CXX) $(SRCS) $(CXXFLAGS) $(LIBS) -o $(TARGET)
+
+run: all
+	./$(TARGET)
+
+clean:
+	rm -f $(TARGET) Game.exe
+
+.PHONY: all clean run
