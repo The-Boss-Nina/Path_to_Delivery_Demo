@@ -9,6 +9,7 @@
 #include "TileSet.h"
 #include <SDL.h>
 #include <string>
+#include "Vehicle.h"
 
 StageState::StageState(VehicleType selectedVehicle)
     : State(), selectedVehicle(selectedVehicle), tileSet(nullptr), backgroundMusic() {}
@@ -102,9 +103,7 @@ void StageState::LoadAssets() {
     }
 
     GameObject* player = new GameObject();
-    SpriteRenderer* playerSprite = new SpriteRenderer(*player, playerSpritePath, playerFrameCountW, 1);
-    playerSprite->SetFrame(4);
-    player->AddComponent(playerSprite);
+    player->AddComponent(new Vehicle(*player, playerSpritePath, true));
     player->AddComponent(new DeliveryPlayer(*player, selectedVehicle));
     player->box.x = 760.0f;
     player->box.y = 1180.0f;
