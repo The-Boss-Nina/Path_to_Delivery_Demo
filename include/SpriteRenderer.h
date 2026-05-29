@@ -17,6 +17,7 @@ public:
     void Render() override;
     void SetFrame(int frame);
     void SetFrame(int frame, SDL_RendererFlip flip);
+    float renderRotation;
 
 private:
     Sprite sprite;

@@ -6,7 +6,7 @@ SpriteRenderer::SpriteRenderer(GameObject& associated)
     : Component(associated), sprite() {}
 
 SpriteRenderer::SpriteRenderer(GameObject& associated, std::string file, int frameCountW, int frameCountH)
-    : Component(associated), sprite() {
+    : Component(associated), sprite(), renderRotation(0.0f) {
     sprite.SetFrameCount(frameCountW, frameCountH);
     Open(file);
     SetFrame(0);
@@ -45,7 +45,7 @@ void SpriteRenderer::Render() {
                   static_cast<int>(associated.box.y),
                   static_cast<int>(associated.box.w),
                   static_cast<int>(associated.box.h),
-                  associated.angleDeg);
+                  renderRotation);
 }
 
 void SpriteRenderer::SetFrame(int frame) {

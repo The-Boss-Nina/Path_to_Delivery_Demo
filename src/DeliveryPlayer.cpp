@@ -1,79 +1,55 @@
 #include "DeliveryPlayer.h"
 #include "GameObject.h"
 #include "InputManager.h"
-#include "SpriteRenderer.h"
+#include "Vehicle.h"
 #include <SDL.h>
-#include <cmath>
 
-static float SpeedForVehicle(VehicleType type) {
+DeliveryPlayer::DeliveryPlayer(GameObject& associated, VehicleType type)
+    : Component(associated), type(type) {}
+
+void DeliveryPlayer::Start() {
+    Vehicle* v = associated.GetComponent<Vehicle>();
+    if (!v) return;
+
+    // Cada veículo tem características próprias de física.
     switch (type) {
         case VehicleType::HARLEY:
-            return 360.0f;
+            v->SetMaxSpeed(360.0f);
+            v->SetAcceleration(220.0f);
+            v->SetTurnSpeed(130.0f);
+            break;
         case VehicleType::VESPA:
-            return 320.0f;
+            v->SetMaxSpeed(320.0f);
+            v->SetAcceleration(180.0f);
+            v->SetTurnSpeed(150.0f);
+            break;
         case VehicleType::BUGGY:
-            return 260.0f;
-        default:
-            return 320.0f;
+            v->SetMaxSpeed(260.0f);
+            v->SetAcceleration(280.0f);
+            v->SetTurnSpeed(100.0f);
+            break;
     }
 }
 
-DeliveryPlayer::DeliveryPlayer(GameObject& associated, VehicleType type)
-    : Component(associated), type(type), speed(SpeedForVehicle(type)) {}
-
 void DeliveryPlayer::Update(float dt) {
+    (void)dt;
+
+    Vehicle* v = associated.GetComponent<Vehicle>();
+    if (!v) return;
+
     InputManager& input = InputManager::GetInstance();
 
-    Vec2 movement(0.0f, 0.0f);
+    if (input.IsKeyDown(SDLK_w) || input.IsKeyDown(UP_ARROW_KEY))
+        v->Issue(Vehicle::Command(Vehicle::Command::ACCELERATE));
 
-    if (input.IsKeyDown(SDLK_w) || input.IsKeyDown(UP_ARROW_KEY)) {
-        movement.y -= 1.0f;
-    }
-    if (input.IsKeyDown(SDLK_s) || input.IsKeyDown(DOWN_ARROW_KEY)) {
-        movement.y += 1.0f;
-    }
-    if (input.IsKeyDown(SDLK_a) || input.IsKeyDown(LEFT_ARROW_KEY)) {
-        movement.x -= 1.0f;
-    }
-    if (input.IsKeyDown(SDLK_d) || input.IsKeyDown(RIGHT_ARROW_KEY)) {
-        movement.x += 1.0f;
-    }
+    if (input.IsKeyDown(SDLK_s) || input.IsKeyDown(DOWN_ARROW_KEY))
+        v->Issue(Vehicle::Command(Vehicle::Command::BRAKE));
 
-    if (movement.x != 0.0f || movement.y != 0.0f) {
-        float length = std::sqrt(movement.x * movement.x + movement.y * movement.y);
-        movement.x = movement.x / length;
-        movement.y = movement.y / length;
+    if (input.IsKeyDown(SDLK_a) || input.IsKeyDown(LEFT_ARROW_KEY))
+        v->Issue(Vehicle::Command(Vehicle::Command::TURN_LEFT));
 
-        associated.box.x += movement.x * speed * dt;
-        associated.box.y += movement.y * speed * dt;
-
-        UpdateSpriteDirection(movement);
-    }
-
-    // Limites simples para o jogador não sair da primeira área do mapa.
-    if (associated.box.x < 0) associated.box.x = 0;
-    if (associated.box.y < 0) associated.box.y = 0;
-    if (associated.box.x > 3600) associated.box.x = 3600;
-    if (associated.box.y > 2300) associated.box.y = 2300;
+    if (input.IsKeyDown(SDLK_d) || input.IsKeyDown(RIGHT_ARROW_KEY))
+        v->Issue(Vehicle::Command(Vehicle::Command::TURN_RIGHT));
 }
 
 void DeliveryPlayer::Render() {}
-
-void DeliveryPlayer::UpdateSpriteDirection(const Vec2& movement) {
-    SpriteRenderer* sr = associated.GetComponent<SpriteRenderer>();
-    if (!sr) return;
-
-    int frame = 0;
-
-    // Os sprites dos veículos estão organizados em uma linha com direções.
-    if (movement.x > 0.4f && movement.y < -0.4f) frame = 5;        // diagonal cima-direita
-    else if (movement.x > 0.4f && movement.y > 0.4f) frame = 7;   // diagonal baixo-direita
-    else if (movement.x < -0.4f && movement.y < -0.4f) frame = 0; // diagonal cima-esquerda
-    else if (movement.x < -0.4f && movement.y > 0.4f) frame = 2;  // diagonal baixo-esquerda
-    else if (movement.x > 0.4f) frame = 6;                        // direita
-    else if (movement.x < -0.4f) frame = 1;                       // esquerda
-    else if (movement.y < -0.4f) frame = 3;                       // cima
-    else if (movement.y > 0.4f) frame = 4;                        // baixo
-
-    sr->SetFrame(frame);
-}

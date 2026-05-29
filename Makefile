@@ -26,7 +26,8 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/Camera.cpp \
        $(SRC_DIR)/Timer.cpp \
        $(SRC_DIR)/InputManager.cpp \
-       $(SRC_DIR)/DeliveryPlayer.cpp
+       $(SRC_DIR)/DeliveryPlayer.cpp \
+       $(SRC_DIR)/Vehicle.cpp
 
 all: $(TARGET)
 
