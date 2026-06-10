@@ -77,3 +77,33 @@ void TileMap::RenderLayer(int layer) {
 int TileMap::GetWidth() const { return mapWidth; }
 int TileMap::GetHeight() const { return mapHeight; }
 int TileMap::GetDepth() const { return mapDepth; }
+
+int TileMap::GetX() const {
+    return associated.box.x;
+}
+
+int TileMap::GetY() const {
+    return associated.box.y;
+}
+
+int TileMap::GetTileWidth() const {
+    if (!tileSet) return 0;
+    return tileSet->GetTileWidth();
+}
+
+int TileMap::GetTileHeight() const {
+    if (!tileSet) return 0;
+    return tileSet->GetTileHeight();
+}
+
+bool TileMap::IsTileBlocked(int x, int y) {
+    if (x < 0 || x >= mapWidth || y < 0 || y >= mapHeight) {
+        return true;
+    }
+
+    if (mapDepth > 1) {
+        return At(x, y, 1) > 10;
+    }
+
+    return At(x, y, 0) > 10;
+}

@@ -3,6 +3,7 @@
 #include "DeliveryPlayer.h"
 #include "Music.h"
 #include "State.h"
+#include "TileMap.h"
 
 class TileSet;
 
@@ -17,9 +18,11 @@ public:
     void Start() override;
     void Pause() override;
     void Resume() override;
+    bool IsCollidingWithTileMap(const Rect& rect) override;
 
 private:
     VehicleType selectedVehicle;
     TileSet* tileSet;
     Music backgroundMusic;
+    TileMap* tileMap;
 };

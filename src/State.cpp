@@ -59,3 +59,8 @@ void State::RenderArray() {
         go->Render();
     }
 }
+
+
+bool State::IsCollidingWithTileMap(const Rect& rect) {
+    return false;
+}

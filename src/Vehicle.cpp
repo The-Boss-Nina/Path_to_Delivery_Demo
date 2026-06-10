@@ -108,13 +108,32 @@ void Vehicle::Update(float dt) {
     // Espelha o ângulo do GameObject para o SpriteRenderer rotacionar corretamente
     // associated.angleDeg = angleDeg;
 
-    // ── Movimento na direção atual ────────────────────────────────────────
+    // ── Movimento com colisão separada por eixo ──────────────────────────
     float rad = angleDeg * (float)M_PI / 180.0f;
-    // Convenção: ângulo 0 = para cima (eixo -Y), cresce no sentido horário
     Vec2 forward(std::sin(rad), -std::cos(rad));
 
-    associated.box.x += forward.x * currentSpeed * dt;
-    associated.box.y += forward.y * currentSpeed * dt;
+    float dx = forward.x * currentSpeed * dt;
+    float dy = forward.y * currentSpeed * dt;
+
+    State& state = Game::GetInstance().GetState();
+
+    // Testa eixo X
+    Rect nextX = associated.box;
+    nextX.x += dx;
+    if (!state.IsCollidingWithTileMap(nextX)) {
+        associated.box.x += dx;
+    } else {
+        currentSpeed *= -0.3f;
+    }
+
+    // Testa eixo Y
+    Rect nextY = associated.box;
+    nextY.y += dy;
+    if (!state.IsCollidingWithTileMap(nextY)) {
+        associated.box.y += dy;
+    } else {
+        currentSpeed *= -0.3f;
+    }
 
     // setar posição da animação
     SpriteRenderer* sr = associated.GetComponent<SpriteRenderer>();
@@ -126,7 +145,7 @@ void Vehicle::Update(float dt) {
 
         // Ajuste para ficar mais fluida a troca do sprite (AINDA NECESSITA AJUSTES)
         float turnInput = (angleDeg < 180.0f ? 1.0f : 0.0f) - (angleDeg > 180.0f ? 1.0f : 0.0f);
-        float maxVisualTilt = 10.0f;
+        float maxVisualTilt = 5.0f;
         float visualTilt = turnInput * (std::abs(currentSpeed) / maxSpeed) * maxVisualTilt;
 
         sr->renderRotation = visualTilt;
