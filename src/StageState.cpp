@@ -88,15 +88,15 @@ void StageState::LoadAssets() {
 
     // Veículos simples, ainda estáticos nesta entrega de 30%.
     CreateSpriteObject(*this, "recursos/img/BuggyV1.png", 1360, 490, 9, 1, 6);
-    CreateSpriteObject(*this, "recursos/img/VespaV1.png", 2820, 1270, 9, 1, 1);
+    CreateSpriteObject(*this, "recursos/img/V3_mustang0008-sheet.png", 1280, 128, 10, 1, 4);
 
     // Jogador principal: o sprite depende da escolha feita na tela anterior.
     std::string playerSpritePath = "recursos/img/HarleyV1.png";
     int playerFrameCountW = 8;
 
     if (selectedVehicle == VehicleType::VESPA) {
-        playerSpritePath = "recursos/img/VespaV1.png";
-        playerFrameCountW = 9;
+        playerSpritePath = "recursos/img/V3_mustang0008-sheet.png";
+        playerFrameCountW = 10;
     } else if (selectedVehicle == VehicleType::BUGGY) {
         playerSpritePath = "recursos/img/BuggyV1.png";
         playerFrameCountW = 9;

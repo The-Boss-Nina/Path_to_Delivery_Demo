@@ -106,7 +106,7 @@ void Vehicle::Update(float dt) {
     while (angleDeg >= 360.0f) angleDeg -= 360.0f;
 
     // Espelha o ângulo do GameObject para o SpriteRenderer rotacionar corretamente
-    // associated.angleDeg = angleDeg;
+    associated.angleDeg = angleDeg;
 
     // ── Movimento com colisão separada por eixo ──────────────────────────
     float rad = angleDeg * (float)M_PI / 180.0f;
@@ -143,12 +143,7 @@ void Vehicle::Update(float dt) {
             normalizedAngle += 360.0f;
         }
 
-        // Ajuste para ficar mais fluida a troca do sprite (AINDA NECESSITA AJUSTES)
-        float turnInput = (angleDeg < 180.0f ? 1.0f : 0.0f) - (angleDeg > 180.0f ? 1.0f : 0.0f);
-        float maxVisualTilt = 5.0f;
-        float visualTilt = turnInput * (std::abs(currentSpeed) / maxSpeed) * maxVisualTilt;
-
-        sr->renderRotation = visualTilt;
+        sr -> renderRotation = angleDeg; // Para renderização rotacionada
 
         // Define quantas direções sua spritesheet possui
         const int numDirections = 8; 
@@ -161,7 +156,7 @@ void Vehicle::Update(float dt) {
         int frame = static_cast<int>(shiftedAngle / sliceSize) % numDirections;
 
         // Mapeamento para a spritesheet
-        int isometricFrames[8] = {0, 7, 6, 5, 4, 3, 2, 1};
+        int isometricFrames[8] = {5, 7, 4, 2, 0, 1, 3, 6};
         sr->SetFrame(isometricFrames[frame]);
     }
 }

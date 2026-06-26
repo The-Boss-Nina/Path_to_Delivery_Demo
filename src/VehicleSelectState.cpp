@@ -56,7 +56,7 @@ void VehicleSelectState::LoadAssets() {
     AddObject(bg);
 
     CreateOption(*this, "recursos/img/HarleyV1.png", 220.0f, 300.0f, 8, 4, 2.4f, 2.4f);
-    CreateOption(*this, "recursos/img/VespaV1.png", 570.0f, 300.0f, 9, 4, 2.4f, 2.4f);
+    CreateOption(*this, "recursos/img/V3_mustang0008-sheet.png", 570.0f, 300.0f, 10, 4, 2.4f, 2.4f);
     CreateOption(*this, "recursos/img/BuggyV1.png", 920.0f, 300.0f, 9, 4, 2.4f, 2.4f);
 }
 
