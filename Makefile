@@ -27,7 +27,9 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/Timer.cpp \
        $(SRC_DIR)/InputManager.cpp \
        $(SRC_DIR)/DeliveryPlayer.cpp \
-       $(SRC_DIR)/Vehicle.cpp
+       $(SRC_DIR)/Vehicle.cpp \
+       $(SRC_DIR)/Collider.cpp \
+       $(SRC_DIR)/Collision.cpp 
 
 all: $(TARGET)
 

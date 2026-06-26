@@ -12,7 +12,7 @@
 #include "Vehicle.h"
 
 StageState::StageState(VehicleType selectedVehicle)
-    : State(), selectedVehicle(selectedVehicle), tileSet(nullptr), backgroundMusic() {}
+    : State(), selectedVehicle(selectedVehicle), tileSet(nullptr), backgroundMusic(), tileMap(nullptr) {}
 
 StageState::~StageState() {
     tileSet = nullptr;
@@ -64,7 +64,7 @@ void StageState::LoadAssets() {
     // Mapa da primeira fase usando o tileset de ruas do Path to Delivery.
     GameObject* mapObject = new GameObject();
     tileSet = new TileSet(128, 128, "recursos/img/RuasV1.png");
-    TileMap* tileMap = new TileMap(*mapObject, "recursos/map/cidade.txt", tileSet);
+    tileMap = new TileMap(*mapObject, "recursos/map/cidade.txt", tileSet);
     mapObject->AddComponent(tileMap);
     mapObject->box.x = 0;
     mapObject->box.y = 0;
@@ -129,4 +129,28 @@ void StageState::Render() {
 }
 
 void StageState::Pause() {}
+
 void StageState::Resume() {}
+
+bool StageState::IsCollidingWithTileMap(const Rect& rect) {
+    if (tileMap == nullptr) {
+        return false;
+    }
+
+    int tileWidth = tileMap->GetTileWidth();
+    int tileHeight = tileMap->GetTileHeight();
+    int left = (int)std::floor((rect.x - tileMap->GetX()) / (float)tileWidth);
+    int right = (int)std::floor((rect.x + rect.w - 1 - tileMap->GetX()) / (float)tileWidth);
+    int top = (int)std::floor((rect.y - tileMap->GetY()) / (float)tileHeight);
+    int bottom = (int)std::floor((rect.y + rect.h - 1 - tileMap->GetY()) / (float)tileHeight);
+
+    for (int y = top; y <= bottom; y++) {
+        for (int x = left; x <= right; x++) {
+            if (tileMap->IsTileBlocked(x, y)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}

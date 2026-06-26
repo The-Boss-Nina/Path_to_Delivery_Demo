@@ -15,6 +15,7 @@ public:
     virtual void Start() = 0;
     virtual void Pause() = 0;
     virtual void Resume() = 0;
+    virtual bool IsCollidingWithTileMap(const Rect& rect);
 
     virtual std::weak_ptr<GameObject> AddObject(GameObject* go);
     virtual std::weak_ptr<GameObject> GetObjectPtr(GameObject* go);

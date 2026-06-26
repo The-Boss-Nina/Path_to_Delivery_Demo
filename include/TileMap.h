@@ -21,6 +21,11 @@ public:
     int GetWidth() const;
     int GetHeight() const;
     int GetDepth() const;
+    int GetX() const;
+    int GetY() const;
+    int GetTileWidth() const;
+    int GetTileHeight() const;
+    bool IsTileBlocked(int x, int y);
 
 private:
     std::vector<int> tileMatrix;
