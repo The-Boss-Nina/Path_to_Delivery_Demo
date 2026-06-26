@@ -31,3 +31,7 @@ void Sound::Open(std::string file) {
 bool Sound::IsOpen() const {
     return chunk != nullptr;
 }
+
+bool Sound::IsPlaying() const {
+    return channel != -1 && Mix_Playing(channel) != 0;
+}

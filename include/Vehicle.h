@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include "Timer.h"
+#include "Sound.h"
  
 class Vehicle : public Component {
     public:
@@ -33,6 +34,9 @@ class Vehicle : public Component {
         void SetMaxSpeed(float v)      { maxSpeed = v; }
         void SetAcceleration(float v)  { acceleration = v; }
         void SetTurnSpeed(float v)     { turnSpeed = v; }
+        Sound engineSound;
+        Sound crashSound;
+        Sound brakeSound;
  
     private:
         // Sprite

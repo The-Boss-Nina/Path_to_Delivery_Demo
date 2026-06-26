@@ -38,6 +38,7 @@ Vehicle::Vehicle(GameObject& associated, std::string sprite, bool isPlayer, int 
     if (Vehicle::player == nullptr && isPlayer) {
         Vehicle::player = this;
     }
+    brakeSound.Open("recursos/sound/FREIO.wav");
 }
 
 Vehicle::~Vehicle() {}
@@ -68,12 +69,20 @@ void Vehicle::Update(float dt) {
     // ── Aceleração / frenagem / fricção ──────────────────────────────────
     if (inputAccel) {
         currentSpeed += acceleration * dt;
+        if (engineSound.IsPlaying() == false) {
+            engineSound.Play(-1); // Loop do som do motor
+        }
     } else if (inputBrake) {
         // Freia se estiver andando para frente; caso contrário, engrena ré
+        engineSound.Stop();
         if (currentSpeed > 0.0f) {
+            if(brakeSound.IsPlaying() == false) {
+                brakeSound.Play();
+            }
             currentSpeed -= brakeForce * dt;
             if (currentSpeed < 0.0f) currentSpeed = 0.0f;
         } else {
+            brakeSound.Stop();
             currentSpeed -= acceleration * dt; // acumula ré
         }
     } else {
@@ -81,6 +90,7 @@ void Vehicle::Update(float dt) {
         if (currentSpeed > 0.0f) {
             currentSpeed -= friction * dt;
             if (currentSpeed < 0.0f) currentSpeed = 0.0f;
+            engineSound.Stop();
         } else if (currentSpeed < 0.0f) {
             currentSpeed += friction * dt;
             if (currentSpeed > 0.0f) currentSpeed = 0.0f;

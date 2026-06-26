@@ -13,6 +13,7 @@ public:
     void Stop();
     void Open(std::string file);
     bool IsOpen() const;
+    bool IsPlaying() const;
 
 private:
     Mix_Chunk* chunk;

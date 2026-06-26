@@ -10,6 +10,7 @@
 #include <SDL.h>
 #include <string>
 #include "Vehicle.h"
+#include "Music.h"
 
 StageState::StageState(VehicleType selectedVehicle)
     : State(), selectedVehicle(selectedVehicle), tileSet(nullptr), backgroundMusic(), tileMap(nullptr) {}
@@ -127,6 +128,9 @@ void StageState::LoadAssets() {
     AddObject(player);
 
     Camera::Follow(player);
+
+    backgroundMusic.Open("recursos/sound/FASE.mp3");
+    backgroundMusic.Play(-1);
 }
 
 void StageState::Update(float dt) {
