@@ -1,5 +1,7 @@
 #include "StageState.h"
 #include "Camera.h"
+#include "Delivery.h"
+#include "Gps.h"
 #include "DeliveryPlayer.h"
 #include "Game.h"
 #include "GameObject.h"
@@ -128,6 +130,23 @@ void StageState::LoadAssets() {
     AddObject(player);
 
     Camera::Follow(player);
+
+    // Sistema de entregas
+    GameObject* deliveryManager = new GameObject();
+    Delivery* delivery = new Delivery(*deliveryManager, *this, tileMap, player);
+    deliveryManager->AddComponent(delivery);
+    AddObject(deliveryManager);
+
+    // Widget GPS — renderizado fixo no canto inferior esquerdo
+    GameObject* gpsObj = new GameObject();
+    SpriteRenderer* gpsSr = new SpriteRenderer(*gpsObj, "recursos/img/computador_bordo.png", 3, 3);
+    gpsSr->SetCameraFollower(true);
+    gpsSr->SetFrame(0);
+    gpsObj->AddComponent(gpsSr);
+    gpsObj->box.x = 10.0f;
+    gpsObj->box.y = 720.0f - gpsObj->box.h - 10.0f;
+    gpsObj->AddComponent(new Gps(*gpsObj, delivery));
+    AddObject(gpsObj);
 
     backgroundMusic.Open("recursos/sound/FASE.mp3");
     backgroundMusic.Play(-1);

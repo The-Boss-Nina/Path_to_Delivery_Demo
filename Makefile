@@ -29,7 +29,9 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/DeliveryPlayer.cpp \
        $(SRC_DIR)/Vehicle.cpp \
        $(SRC_DIR)/Collider.cpp \
-       $(SRC_DIR)/Collision.cpp 
+       $(SRC_DIR)/Collision.cpp \
+       $(SRC_DIR)/Delivery.cpp \
+       $(SRC_DIR)/Gps.cpp
 
 all: $(TARGET)
 
