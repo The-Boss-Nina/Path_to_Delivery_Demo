@@ -32,7 +32,11 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/Collision.cpp \
        $(SRC_DIR)/Delivery.cpp \
        $(SRC_DIR)/Gps.cpp \
-       $(SRC_DIR)/Speedometer.cpp
+       $(SRC_DIR)/Speedometer.cpp \
+       $(SRC_DIR)/HpMeter.cpp \
+       $(SRC_DIR)/TitleState.cpp \
+       $(SRC_DIR)/Text.cpp \
+       $(SRC_DIR)/InstructionsState.cpp
 
 # CITY_TARGET = GenerateCity
 

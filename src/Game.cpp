@@ -100,6 +100,7 @@ Game::~Game() {
     Resources::ClearImages();
     Resources::ClearSounds();
     Resources::ClearMusics();
+    Resources::ClearFonts();
 
     Mix_CloseAudio();
     Mix_Quit();
@@ -155,6 +156,7 @@ void Game::Run() {
             Resources::ClearImages();
             Resources::ClearSounds();
             Resources::ClearMusics();
+            Resources::ClearFonts();
 
             if (!stateStack.empty()) {
                 stateStack.top()->Resume();
@@ -193,4 +195,5 @@ void Game::Run() {
     Resources::ClearImages();
     Resources::ClearSounds();
     Resources::ClearMusics();
+    Resources::ClearFonts();
 }

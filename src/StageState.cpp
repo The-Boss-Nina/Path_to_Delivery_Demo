@@ -3,6 +3,7 @@
 #include "Delivery.h"
 #include "Gps.h"
 #include "Speedometer.h"
+#include "HpMeter.h"
 #include "DeliveryPlayer.h"
 #include "Game.h"
 #include "GameObject.h"
@@ -223,6 +224,17 @@ void StageState::LoadAssets() {
     speedoObj->box.y = 720.0f - speedoObj->box.h - 10.0f;
     speedoObj->AddComponent(new Speedometer(*speedoObj, Vehicle::player));
     AddObject(speedoObj);
+
+    // Widget de vida — renderizado fixo à esquerda do velocímetro.
+    GameObject* hpObj = new GameObject();
+    SpriteRenderer* hpSr = new SpriteRenderer(*hpObj, "recursos/img/marcador_vida_sheet.png", 5, 5);
+    hpSr->SetCameraFollower(true);
+    hpSr->SetFrame(0);
+    hpObj->AddComponent(hpSr);
+    hpObj->box.x = speedoObj->box.x - hpObj->box.w - 10.0f;
+    hpObj->box.y = 720.0f - hpObj->box.h - 10.0f;
+    hpObj->AddComponent(new HpMeter(*hpObj, Vehicle::player));
+    AddObject(hpObj);
 
     backgroundMusic.Open("recursos/sound/FASE.mp3");
     backgroundMusic.Play(-1);
