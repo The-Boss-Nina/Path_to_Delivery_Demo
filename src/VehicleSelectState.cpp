@@ -3,8 +3,8 @@
 #include "Game.h"
 #include "GameObject.h"
 #include "InputManager.h"
+#include "ObjectivesState.h"
 #include "SpriteRenderer.h"
-#include "StageState.h"
 #include <SDL.h>
 #include <string>
 
@@ -73,19 +73,19 @@ void VehicleSelectState::Update(float dt) {
     }
 
     if (input.KeyPress(SDLK_1) || input.KeyPress(SDLK_KP_1)) {
-        Game::GetInstance().Push(new StageState(VehicleType::HARLEY));
+        Game::GetInstance().Push(new ObjectivesState(VehicleType::HARLEY));
     }
 
     if (input.KeyPress(SDLK_2) || input.KeyPress(SDLK_KP_2)) {
-        Game::GetInstance().Push(new StageState(VehicleType::VESPA));
+        Game::GetInstance().Push(new ObjectivesState(VehicleType::VESPA));
     }
 
     if (input.KeyPress(SDLK_3) || input.KeyPress(SDLK_KP_3)) {
-        Game::GetInstance().Push(new StageState(VehicleType::UNO));
+        Game::GetInstance().Push(new ObjectivesState(VehicleType::UNO));
     }
 
     if (input.KeyPress(SDLK_4) || input.KeyPress(SDLK_KP_4)) {
-        Game::GetInstance().Push(new StageState(VehicleType::MUSTANG));
+        Game::GetInstance().Push(new ObjectivesState(VehicleType::MUSTANG));
     }
 
     UpdateArray(dt);

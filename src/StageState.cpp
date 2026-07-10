@@ -9,17 +9,38 @@
 #include "GameObject.h"
 #include "InputManager.h"
 #include "SpriteRenderer.h"
+#include "Text.h"
 #include "TileMap.h"
 #include "TileSet.h"
 #include <SDL.h>
 #include <algorithm>
+#include <cmath>
+#include <cstdio>
 #include <string>
 #include <vector>
 #include "Vehicle.h"
 #include "Music.h"
 
+namespace {
+constexpr float kGameDuration = 300.0f;  // 5 minutos
+constexpr int kDeliveryGoal = 8;
+
+std::string FormatTime(float seconds) {
+    int total = static_cast<int>(std::ceil(seconds));
+    if (total < 0) total = 0;
+    int minutes = total / 60;
+    int secs = total % 60;
+    char buf[16];
+    std::snprintf(buf, sizeof(buf), "%d:%02d", minutes, secs);
+    return std::string(buf);
+}
+}  // namespace
+
 StageState::StageState(VehicleType selectedVehicle)
-    : State(), selectedVehicle(selectedVehicle), tileSet(nullptr), backgroundMusic(), tileMap(nullptr) {}
+    : State(), selectedVehicle(selectedVehicle), tileSet(nullptr), backgroundMusic(), tileMap(nullptr),
+      delivery(nullptr), timeText(nullptr), goalText(nullptr), deliveryCountText(nullptr), endBannerText(nullptr),
+      endBannerObj(nullptr),
+      timeRemaining(kGameDuration), gameEnded(false), lastDisplayedSeconds(-1), lastDisplayedCount(-1) {}
 
 StageState::~StageState() {
     tileSet = nullptr;
@@ -199,7 +220,7 @@ void StageState::LoadAssets() {
 
     // Sistema de entregas
     GameObject* deliveryManager = new GameObject();
-    Delivery* delivery = new Delivery(*deliveryManager, *this, tileMap, player);
+    delivery = new Delivery(*deliveryManager, *this, tileMap, player);
     deliveryManager->AddComponent(delivery);
     AddObject(deliveryManager);
 
@@ -236,6 +257,43 @@ void StageState::LoadAssets() {
     hpObj->AddComponent(new HpMeter(*hpObj, Vehicle::player));
     AddObject(hpObj);
 
+    // HUD de objetivo — canto superior esquerdo, uma linha embaixo da outra.
+    SDL_Color hudWhite = { 255, 255, 255, 255 };
+    const float kHudX = 10.0f;
+    const float kHudLineHeight = 32.0f;
+
+    GameObject* timeObj = new GameObject();
+    timeText = new Text(*timeObj, "recursos/font/neodgm.ttf", 28, Text::BLENDED,
+                        "Tempo Restante: " + FormatTime(timeRemaining), hudWhite);
+    timeObj->AddComponent(timeText);
+    timeObj->box.x = kHudX;
+    timeObj->box.y = 10.0f;
+    AddObject(timeObj);
+
+    GameObject* goalObj = new GameObject();
+    goalText = new Text(*goalObj, "recursos/font/neodgm.ttf", 28, Text::BLENDED,
+                        "Objetivo: " + std::to_string(kDeliveryGoal), hudWhite);
+    goalObj->AddComponent(goalText);
+    goalObj->box.x = kHudX;
+    goalObj->box.y = 10.0f + kHudLineHeight;
+    AddObject(goalObj);
+
+    GameObject* deliveryCountObj = new GameObject();
+    deliveryCountText = new Text(*deliveryCountObj, "recursos/font/neodgm.ttf", 28, Text::BLENDED,
+                                 "Número Entregas: 0", hudWhite);
+    deliveryCountObj->AddComponent(deliveryCountText);
+    deliveryCountObj->box.x = kHudX;
+    deliveryCountObj->box.y = 10.0f + 2 * kHudLineHeight;
+    AddObject(deliveryCountObj);
+
+    // Faixa de vitória/derrota — vazia (invisível) até o jogo terminar.
+    endBannerObj = new GameObject();
+    endBannerText = new Text(*endBannerObj, "recursos/font/neodgm.ttf", 48, Text::BLENDED, "", hudWhite);
+    endBannerObj->AddComponent(endBannerText);
+    endBannerObj->box.x = 0.0f;
+    endBannerObj->box.y = 300.0f;
+    AddObject(endBannerObj);
+
     backgroundMusic.Open("recursos/sound/FASE.mp3");
     backgroundMusic.Play(-1);
 }
@@ -246,6 +304,42 @@ void StageState::Update(float dt) {
     if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY)) {
         quitRequested = true;
         return;
+    }
+
+    if (gameEnded) return;
+
+    timeRemaining -= dt;
+    if (timeRemaining < 0.0f) timeRemaining = 0.0f;
+
+    int deliveryCount = delivery ? delivery->deliveryCount : 0;
+
+    if (deliveryCount >= kDeliveryGoal) {
+        gameEnded = true;
+        if (endBannerText && endBannerObj) {
+            SDL_Color green = { 60, 220, 90, 255 };
+            endBannerText->SetColor(green);
+            endBannerText->SetText("Você venceu! Todas as entregas concluídas.");
+            endBannerObj->box.x = 640.0f - endBannerObj->box.w / 2.0f;
+        }
+    } else if (timeRemaining <= 0.0f) {
+        gameEnded = true;
+        if (endBannerText && endBannerObj) {
+            SDL_Color red = { 220, 60, 60, 255 };
+            endBannerText->SetColor(red);
+            endBannerText->SetText("Tempo esgotado! Você perdeu.");
+            endBannerObj->box.x = 640.0f - endBannerObj->box.w / 2.0f;
+        }
+    }
+
+    int seconds = static_cast<int>(std::ceil(timeRemaining));
+    if (seconds != lastDisplayedSeconds) {
+        lastDisplayedSeconds = seconds;
+        if (timeText) timeText->SetText("Tempo Restante: " + FormatTime(timeRemaining));
+    }
+
+    if (deliveryCount != lastDisplayedCount) {
+        lastDisplayedCount = deliveryCount;
+        if (deliveryCountText) deliveryCountText->SetText("Número Entregas: " + std::to_string(deliveryCount));
     }
 
     Camera::Update(dt);

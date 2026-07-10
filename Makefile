@@ -36,7 +36,8 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/HpMeter.cpp \
        $(SRC_DIR)/TitleState.cpp \
        $(SRC_DIR)/Text.cpp \
-       $(SRC_DIR)/InstructionsState.cpp
+       $(SRC_DIR)/InstructionsState.cpp \
+       $(SRC_DIR)/ObjectivesState.cpp
 
 # CITY_TARGET = GenerateCity
 

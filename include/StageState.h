@@ -6,6 +6,8 @@
 #include "TileMap.h"
 
 class TileSet;
+class Delivery;
+class Text;
 
 class StageState : public State {
 public:
@@ -25,4 +27,16 @@ private:
     TileSet* tileSet;
     Music backgroundMusic;
     TileMap* tileMap;
+
+    Delivery* delivery;
+    Text* timeText;
+    Text* goalText;
+    Text* deliveryCountText;
+    Text* endBannerText;
+    GameObject* endBannerObj;
+
+    float timeRemaining;
+    bool gameEnded;
+    int lastDisplayedSeconds;
+    int lastDisplayedCount;
 };

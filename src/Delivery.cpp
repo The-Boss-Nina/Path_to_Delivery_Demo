@@ -36,10 +36,16 @@ Vec2 Delivery::generateRandomLocation() {
     std::uniform_int_distribution<int> distX(0, mapW - 1);
     std::uniform_int_distribution<int> distY(0, mapH - 1);
 
+    
+    auto isRoadTile = [&](int tx, int ty) {
+        int tile = tileMap->At(tx, ty, 0);
+        return tile == 4 || tile == 5 || tile == 16;
+    };
+
     for (int attempts = 0; attempts < 1000; ++attempts) {
         int tx = distX(getRng());
         int ty = distY(getRng());
-        if (!tileMap->IsTileBlocked(tx, ty)) {
+        if (isRoadTile(tx, ty) && !tileMap->IsTileBlocked(tx, ty)) {
             return Vec2(
                 static_cast<float>(tx * tileW + tileW / 2),
                 static_cast<float>(ty * tileH + tileH / 2)
