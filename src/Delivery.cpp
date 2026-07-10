@@ -3,6 +3,7 @@
 #include "SpriteRenderer.h"
 #include "State.h"
 #include "TileMap.h"
+#include "Vehicle.h"
 #include <algorithm>
 #include <cstdio>
 #include <queue>
@@ -60,6 +61,10 @@ void Delivery::startDelivery() {
     deliveryActive = true;
     hasLastDirection = false;
 
+    if (Vehicle* vehicle = player->GetComponent<Vehicle>()) {
+        vehicle->SetCarryingPackage(true);
+    }
+
     if (auto icon = pickupIcon.lock()) {
         icon->RequestDelete();
     }
@@ -77,6 +82,10 @@ void Delivery::finishDelivery() {
     deliveryActive = false;
     deliveryCount += 1;
     hasLastDirection = false;
+
+    if (Vehicle* vehicle = player->GetComponent<Vehicle>()) {
+        vehicle->SetCarryingPackage(false);
+    }
 
     if (auto arrow = destinationIcon.lock()) {
         arrow->RequestDelete();

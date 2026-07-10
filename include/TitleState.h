@@ -3,6 +3,7 @@
 
 #include "State.h"
 #include "Timer.h"
+#include "Music.h"
 
 class TitleState : public State {
     public:
@@ -18,6 +19,7 @@ class TitleState : public State {
     private:
         Timer blinkTimer;
         bool showText;
+        Music menuMusic;
 };
 
 #endif

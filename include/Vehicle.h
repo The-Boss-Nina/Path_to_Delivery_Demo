@@ -37,6 +37,8 @@ class Vehicle : public Component {
         float GetSpeed() const         { return currentSpeed; }
         float GetMaxSpeed() const      { return maxSpeed; }
         int GetHp() const              { return hp; }
+        void SetCarryingPackage(bool carrying) { carryingPackage = carrying; }
+        bool IsCarryingPackage() const { return carryingPackage; }
         Sound engineSound;
         Sound crashSound;
         Sound brakeSound;
@@ -67,6 +69,7 @@ class Vehicle : public Component {
  
         int hp;
         bool isPlayer;
+        bool carryingPackage;
         Timer deathTimer;
         Timer hitTimer;
 };

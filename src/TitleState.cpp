@@ -7,10 +7,11 @@
 #include "InstructionsState.h"
 #include "Text.h"
 #include "Timer.h"
+#include "Music.h"
 
 #define BLINK_INTERVAL 1.0f
 
-TitleState::TitleState() : showText(true) {
+TitleState::TitleState() : showText(true), menuMusic() {
     GameObject* titleState = new GameObject();
     SpriteRenderer* spriteTitle = new SpriteRenderer(*titleState, "recursos/img/TelaInicial.png", 1, 1);
     spriteTitle->SetCameraFollower(true);
@@ -65,6 +66,8 @@ void TitleState::Start() {
     if (started) return;
 
     StartArray();
+    menuMusic.Open("recursos/sound/MENU.wav");
+    menuMusic.Play(-1);
     started = true;
 }
 

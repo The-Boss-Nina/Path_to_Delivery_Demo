@@ -1,7 +1,6 @@
 #pragma once
 
 #include "State.h"
-#include "Timer.h"
 
 class InstructionsState : public State {
 public:
@@ -16,9 +15,11 @@ public:
     void Resume() override;
 
 private:
-    Timer slideTimer;
-    Timer blinkTimer;
     int currentSlide;
-    bool showingPrompt;
-    bool showText;
+
+    bool IsMouseOverBack() const;
+    bool IsMouseOverNext() const;
+    void GoBack();
+    void GoNext();
 };
+

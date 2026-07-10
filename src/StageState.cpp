@@ -7,6 +7,7 @@
 #include "DeliveryPlayer.h"
 #include "Game.h"
 #include "GameObject.h"
+#include "GameOverState.h"
 #include "InputManager.h"
 #include "SpriteRenderer.h"
 #include "Text.h"
@@ -19,6 +20,7 @@
 #include <string>
 #include <vector>
 #include "Vehicle.h"
+#include "VictoryState.h"
 #include "Music.h"
 
 namespace {
@@ -141,7 +143,7 @@ void StageState::LoadAssets() {
     // Mapa da primeira fase usando o tileset de ruas do Path to Delivery.
     GameObject* mapObject = new GameObject();
     tileSet = new TileSet(512, 512, "recursos/img/v2RuasSpritesheet.png", 512, 512);
-    tileMap = new TileMap(*mapObject, "recursos/map/cidade2.txt", tileSet);
+    tileMap = new TileMap(*mapObject, "recursos/map/cidade_criada.txt", tileSet);
     mapObject->AddComponent(tileMap);
     mapObject->box.x = 0;
     mapObject->box.y = 0;
@@ -187,22 +189,22 @@ void StageState::LoadAssets() {
     CreateSpriteObject(*this, "recursos/img/V3_mustang0008-sheet.png", 1280 * worldScale, 128 * worldScale, 10, 1, 9);
 
     // Jogador principal: o sprite depende da escolha feita na tela anterior.
-    std::string playerSpritePath = "recursos/img/HarleyV1.png";
-    int playerFrameCountW = 8;
-    int playerFrameCountH = 1;
+    std::string playerSpritePath = "recursos/img/harley_final_entrega.png";
+    int playerFrameCountW = 4;
+    int playerFrameCountH = 4;
 
     if (selectedVehicle == VehicleType::VESPA) {
         playerSpritePath = "recursos/img/V3vezpa.png";
         playerFrameCountW = 4;
         playerFrameCountH = 3;
     } else if (selectedVehicle == VehicleType::UNO) {
-        playerSpritePath = "recursos/img/V3uno.png";
+        playerSpritePath = "recursos/img/uno_final_entrega.png";
         playerFrameCountW = 4;
-        playerFrameCountH = 3;
+        playerFrameCountH = 4;
     } else if (selectedVehicle == VehicleType::HARLEY) {
-        playerSpritePath = "recursos/img/V3_harley_sheet.png";
-        playerFrameCountW = 10;
-        playerFrameCountH = 1;
+        playerSpritePath = "recursos/img/harley_final_entrega.png";
+        playerFrameCountW = 4;
+        playerFrameCountH = 4;
     } else if (selectedVehicle == VehicleType::MUSTANG) {
         playerSpritePath = "recursos/img/V3_mustang0008-sheet.png";
         playerFrameCountW = 10;
@@ -280,7 +282,7 @@ void StageState::LoadAssets() {
 
     GameObject* deliveryCountObj = new GameObject();
     deliveryCountText = new Text(*deliveryCountObj, "recursos/font/neodgm.ttf", 28, Text::BLENDED,
-                                 "Número Entregas: 0", hudWhite);
+                                 "Numero Entregas: 0", hudWhite);
     deliveryCountObj->AddComponent(deliveryCountText);
     deliveryCountObj->box.x = kHudX;
     deliveryCountObj->box.y = 10.0f + 2 * kHudLineHeight;
@@ -318,17 +320,19 @@ void StageState::Update(float dt) {
         if (endBannerText && endBannerObj) {
             SDL_Color green = { 60, 220, 90, 255 };
             endBannerText->SetColor(green);
-            endBannerText->SetText("Você venceu! Todas as entregas concluídas.");
+            endBannerText->SetText("Voce venceu! Todas as entregas concluidas.");
             endBannerObj->box.x = 640.0f - endBannerObj->box.w / 2.0f;
         }
+        Game::GetInstance().Push(new VictoryState());
     } else if (timeRemaining <= 0.0f) {
         gameEnded = true;
         if (endBannerText && endBannerObj) {
             SDL_Color red = { 220, 60, 60, 255 };
             endBannerText->SetColor(red);
-            endBannerText->SetText("Tempo esgotado! Você perdeu.");
+            endBannerText->SetText("Tempo esgotado! Voce perdeu.");
             endBannerObj->box.x = 640.0f - endBannerObj->box.w / 2.0f;
         }
+        Game::GetInstance().Push(new GameOverState());
     }
 
     int seconds = static_cast<int>(std::ceil(timeRemaining));
@@ -339,7 +343,7 @@ void StageState::Update(float dt) {
 
     if (deliveryCount != lastDisplayedCount) {
         lastDisplayedCount = deliveryCount;
-        if (deliveryCountText) deliveryCountText->SetText("Número Entregas: " + std::to_string(deliveryCount));
+        if (deliveryCountText) deliveryCountText->SetText("Numero Entregas: " + std::to_string(deliveryCount));
     }
 
     Camera::Update(dt);

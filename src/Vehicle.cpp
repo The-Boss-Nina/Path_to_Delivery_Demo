@@ -29,7 +29,7 @@ Vehicle::Vehicle(GameObject& associated, std::string sprite, bool isPlayer, int 
       angleDeg(0.0f),
       inputAccel(false), inputBrake(false),
       inputLeft(false), inputRight(false),
-      hp(100), isPlayer(isPlayer) {
+      hp(100), isPlayer(isPlayer), carryingPackage(false) {
 
     SpriteRenderer* sr = new SpriteRenderer(associated, spritePath, spriteFrameCountW, spriteFrameCountH);
     sr->SetFrame(0);
@@ -175,7 +175,16 @@ void Vehicle::Update(float dt) {
 
         // Mapeamento para a spritesheet
         int isometricFrames[8] = {5, 7, 4, 2, 0, 1, 3, 6};
-        sr->SetFrame(isometricFrames[frame]);
+        int spriteFrame = isometricFrames[frame];
+
+        // As spritesheets novas possuem duas versões do veículo:
+        // frames 0..7  = sem encomenda;
+        // frames 8..15 = com mochila/carga após a coleta.
+        if (carryingPackage && spriteFrameCountW * spriteFrameCountH >= 16) {
+            spriteFrame += 8;
+        }
+
+        sr->SetFrame(spriteFrame);
     }
 }
 

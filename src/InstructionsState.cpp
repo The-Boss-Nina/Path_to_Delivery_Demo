@@ -9,17 +9,13 @@
 #include <string>
 
 namespace {
-constexpr float kSlideDuration = 2.0f;
-constexpr float kBlinkInterval = 1.0f;
 constexpr int kSlideCount = 3;
-}  // namespace
 
-InstructionsState::InstructionsState()
-    : State(), currentSlide(0), showingPrompt(false), showText(true) {}
+// Botões inferiores. As áreas são grandes para facilitar o clique.
+const SDL_Rect kBackButton = {70, 635, 240, 58};
+const SDL_Rect kNextButton = {970, 635, 240, 58};
 
-InstructionsState::~InstructionsState() {}
-
-static GameObject* CreateFullscreenImage(State& state, const std::string& file) {
+GameObject* CreateFullscreenImage(State& state, const std::string& file) {
     GameObject* object = new GameObject();
     SpriteRenderer* sr = new SpriteRenderer(*object, file, 1, 1);
     sr->SetCameraFollower(true);
@@ -32,25 +28,40 @@ static GameObject* CreateFullscreenImage(State& state, const std::string& file) 
     return object;
 }
 
+GameObject* CreateButtonText(State& state,
+                             const std::string& label,
+                             float centerX,
+                             float y) {
+    GameObject* obj = new GameObject();
+    SDL_Color white = {255, 255, 255, 255};
+    Text* text = new Text(*obj,
+                          "recursos/font/neodgm.ttf",
+                          30,
+                          Text::BLENDED,
+                          label,
+                          white);
+    obj->AddComponent(text);
+    obj->box.x = centerX - obj->box.w / 2.0f;
+    obj->box.y = y;
+    state.AddObject(obj);
+    return obj;
+}
+}  // namespace
+
+InstructionsState::InstructionsState()
+    : State(), currentSlide(0) {}
+
+InstructionsState::~InstructionsState() {}
+
 void InstructionsState::LoadAssets() {
-    // Slides na ordem em que devem aparecer (índices 0, 1, 2 do objectArray).
+    // Ordem das telas: guia -> como jogar -> história.
     CreateFullscreenImage(*this, "recursos/img/guia_de_interface.png");
     CreateFullscreenImage(*this, "recursos/img/como_jogar.png");
     CreateFullscreenImage(*this, "recursos/img/historia.png");
 
-    // Texto piscante — mesmo padrão da TitleState (índice 3 do objectArray).
-    GameObject* textObj = new GameObject();
-    SDL_Color white = { 255, 255, 255, 255 };
-    Text* text = new Text(*textObj,
-                          "recursos/font/neodgm.ttf",
-                          40,
-                          Text::BLENDED,
-                          "Pressione ESPACO para continuar",
-                          white);
-    textObj->AddComponent(text);
-    textObj->box.x = 640 - textObj->box.w / 2;
-    textObj->box.y = 650;
-    AddObject(textObj);
+    // Textos dos botões. Os fundos são desenhados no Render().
+    CreateButtonText(*this, "<  VOLTAR", 190.0f, 649.0f);   // índice 3
+    CreateButtonText(*this, "PROXIMO  >", 1090.0f, 649.0f); // índice 4
 }
 
 void InstructionsState::Start() {
@@ -61,48 +72,119 @@ void InstructionsState::Start() {
     started = true;
 }
 
-void InstructionsState::Update(float dt) {
-    InputManager& input = InputManager::GetInstance();
+bool InstructionsState::IsMouseOverBack() const {
+    const InputManager& input = InputManager::GetInstance();
+    const int x = input.GetMouseX();
+    const int y = input.GetMouseY();
+    return x >= kBackButton.x && x <= kBackButton.x + kBackButton.w &&
+           y >= kBackButton.y && y <= kBackButton.y + kBackButton.h;
+}
 
-    if (input.QuitRequested() || input.KeyPress(ESCAPE_KEY)) {
+bool InstructionsState::IsMouseOverNext() const {
+    const InputManager& input = InputManager::GetInstance();
+    const int x = input.GetMouseX();
+    const int y = input.GetMouseY();
+    return x >= kNextButton.x && x <= kNextButton.x + kNextButton.w &&
+           y >= kNextButton.y && y <= kNextButton.y + kNextButton.h;
+}
+
+void InstructionsState::GoBack() {
+    if (currentSlide > 0) {
+        --currentSlide;
+    } else {
+        // Na primeira tela, VOLTAR retorna ao menu inicial.
         quitRequested = true;
-        return;
     }
+}
 
-    if (!showingPrompt) {
-        slideTimer.Update(dt);
-        if (slideTimer.Get() >= kSlideDuration) {
-            slideTimer.Restart();
-            currentSlide++;
-            if (currentSlide >= kSlideCount) {
-                showingPrompt = true;
-            }
-        }
-        return;
-    }
-
-    // Alterna visibilidade do texto a cada kBlinkInterval segundos.
-    blinkTimer.Update(dt);
-    if (blinkTimer.Get() >= kBlinkInterval) {
-        showText = !showText;
-        blinkTimer.Restart();
-    }
-
-    if (input.KeyPress(SDLK_SPACE)) {
+void InstructionsState::GoNext() {
+    if (currentSlide < kSlideCount - 1) {
+        ++currentSlide;
+    } else {
+        // Na última tela, PRÓXIMO abre a seleção de veículo.
         Game::GetInstance().Push(new VehicleSelectState());
     }
 }
 
-void InstructionsState::Render() {
-    if (!showingPrompt) {
-        objectArray[currentSlide]->Render();
+void InstructionsState::Update(float) {
+    InputManager& input = InputManager::GetInstance();
+
+    if (input.QuitRequested()) {
+        quitRequested = true;
         return;
     }
 
-    // Mantém o último slide (história) de fundo enquanto o texto pisca.
-    objectArray[kSlideCount - 1]->Render();
-    if (showText) {
-        objectArray[kSlideCount]->Render();
+    // ESC também volta uma tela; na primeira, retorna ao menu.
+    if (input.KeyPress(ESCAPE_KEY) ||
+        input.KeyPress(LEFT_ARROW_KEY) ||
+        input.KeyPress(SDLK_a)) {
+        GoBack();
+        return;
+    }
+
+    // Setas, A/D, ESPAÇO e ENTER funcionam junto com os botões visuais.
+    if (input.KeyPress(RIGHT_ARROW_KEY) ||
+        input.KeyPress(SDLK_d) ||
+        input.KeyPress(SDLK_SPACE) ||
+        input.KeyPress(SDLK_RETURN)) {
+        GoNext();
+        return;
+    }
+
+    if (input.MousePress(LEFT_MOUSE_BUTTON)) {
+        if (IsMouseOverBack()) {
+            GoBack();
+        } else if (IsMouseOverNext()) {
+            GoNext();
+        }
+    }
+}
+
+void InstructionsState::Render() {
+    // Tela atual.
+    objectArray[currentSlide]->Render();
+
+    SDL_Renderer* renderer = Game::GetInstance().GetRenderer();
+
+    // Fundo dos botões em preto com borda roxa, seguindo o estilo das telas.
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 220);
+    SDL_RenderFillRect(renderer, &kBackButton);
+    SDL_RenderFillRect(renderer, &kNextButton);
+
+    const bool overBack = IsMouseOverBack();
+    const bool overNext = IsMouseOverNext();
+
+    SDL_SetRenderDrawColor(renderer,
+                           overBack ? 255 : 111,
+                           overBack ? 0 : 42,
+                           overBack ? 220 : 167,
+                           255);
+    SDL_RenderDrawRect(renderer, &kBackButton);
+
+    SDL_SetRenderDrawColor(renderer,
+                           overNext ? 255 : 111,
+                           overNext ? 0 : 42,
+                           overNext ? 220 : 167,
+                           255);
+    SDL_RenderDrawRect(renderer, &kNextButton);
+
+    // Textos dos botões.
+    objectArray[3]->Render();
+    objectArray[4]->Render();
+
+    // Indicador da página: 1/3, 2/3 ou 3/3.
+    const int dotY = 674;
+    const int startX = 620;
+    for (int i = 0; i < kSlideCount; ++i) {
+        SDL_Rect dot = {startX + i * 20, dotY, 10, 10};
+        if (i == currentSlide) {
+            SDL_SetRenderDrawColor(renderer, 0, 255, 240, 255);
+            SDL_RenderFillRect(renderer, &dot);
+        } else {
+            SDL_SetRenderDrawColor(renderer, 111, 42, 167, 255);
+            SDL_RenderDrawRect(renderer, &dot);
+        }
     }
 }
 
