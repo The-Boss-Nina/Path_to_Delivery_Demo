@@ -55,9 +55,9 @@ InstructionsState::~InstructionsState() {}
 
 void InstructionsState::LoadAssets() {
     // Ordem das telas: guia -> como jogar -> história.
-    CreateFullscreenImage(*this, "recursos/img/guia_de_interface.png");
-    CreateFullscreenImage(*this, "recursos/img/como_jogar.png");
-    CreateFullscreenImage(*this, "recursos/img/historia.png");
+    CreateFullscreenImage(*this, "recursos/img/guia_de_interface.jpeg");
+    CreateFullscreenImage(*this, "recursos/img/como_jogar.jpeg");
+    CreateFullscreenImage(*this, "recursos/img/historia.jpeg");
 
     // Textos dos botões. Os fundos são desenhados no Render().
     CreateButtonText(*this, "<  VOLTAR", 190.0f, 649.0f);   // índice 3

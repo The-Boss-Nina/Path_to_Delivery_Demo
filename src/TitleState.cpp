@@ -4,7 +4,7 @@
 #include "Game.h"
 #include "SDL.h"
 #include "SpriteRenderer.h"
-#include "InstructionsState.h"
+#include "DificultyState.h"
 #include "Text.h"
 #include "Timer.h"
 #include "Music.h"
@@ -13,7 +13,7 @@
 
 TitleState::TitleState() : showText(true), menuMusic() {
     GameObject* titleState = new GameObject();
-    SpriteRenderer* spriteTitle = new SpriteRenderer(*titleState, "recursos/img/TelaInicial.png", 1, 1);
+    SpriteRenderer* spriteTitle = new SpriteRenderer(*titleState, "recursos/img/TelaInicial.jpeg", 1, 1);
     spriteTitle->SetCameraFollower(true);
     titleState->AddComponent(spriteTitle);
 
@@ -47,7 +47,7 @@ void TitleState::Update(float dt) {
     }
 
     if(InputManager::GetInstance().KeyPress(SDLK_SPACE)) {
-        Game::GetInstance().Push(new InstructionsState());
+        Game::GetInstance().Push(new DificultyState());
     }
 
     // Alterna visibilidade do texto a cada BLINK_INTERVAL segundos

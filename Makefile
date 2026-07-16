@@ -39,7 +39,8 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/InstructionsState.cpp \
        $(SRC_DIR)/ObjectivesState.cpp \
        ${SRC_DIR}/GameOverState.cpp \
-       ${SRC_DIR}/VictoryState.cpp      
+       ${SRC_DIR}/VictoryState.cpp \
+       ${SRC_DIR}/DificultyState.cpp \
 
 # CITY_TARGET = GenerateCity
 

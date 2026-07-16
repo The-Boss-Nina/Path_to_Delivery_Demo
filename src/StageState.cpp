@@ -23,26 +23,42 @@
 #include "VictoryState.h"
 #include "Music.h"
 
-namespace {
-constexpr float kGameDuration = 300.0f;  // 5 minutos
-constexpr int kDeliveryGoal = 8;
+int SetDeliveryGoalBasedOnDifficulty() {
+    int deliveryGoal = 0;
 
-std::string FormatTime(float seconds) {
-    int total = static_cast<int>(std::ceil(seconds));
-    if (total < 0) total = 0;
-    int minutes = total / 60;
-    int secs = total % 60;
-    char buf[16];
-    std::snprintf(buf, sizeof(buf), "%d:%02d", minutes, secs);
-    return std::string(buf);
+    if (Game::GetInstance().dificulty == 1) {
+        deliveryGoal = 2;
+    } else if (Game::GetInstance().dificulty == 2) {
+        deliveryGoal = 3;
+    } else if (Game::GetInstance().dificulty == 3) {
+        deliveryGoal = 5;
+    } else {
+        deliveryGoal = 5; // Default case
+    }
+
+    return deliveryGoal;
 }
-}  // namespace
+
+namespace {
+    constexpr float kGameDuration = 300.0f;  // 5 minutos
+
+    std::string FormatTime(float seconds) {
+        int total = static_cast<int>(std::ceil(seconds));
+        if (total < 0) total = 0;
+        int minutes = total / 60;
+        int secs = total % 60;
+        char buf[16];
+        std::snprintf(buf, sizeof(buf), "%d:%02d", minutes, secs);
+        return std::string(buf);
+    }
+}
 
 StageState::StageState(VehicleType selectedVehicle)
     : State(), selectedVehicle(selectedVehicle), tileSet(nullptr), backgroundMusic(), tileMap(nullptr),
       delivery(nullptr), timeText(nullptr), goalText(nullptr), deliveryCountText(nullptr), endBannerText(nullptr),
       endBannerObj(nullptr),
-      timeRemaining(kGameDuration), gameEnded(false), lastDisplayedSeconds(-1), lastDisplayedCount(-1) {}
+      timeRemaining(kGameDuration), gameEnded(false), lastDisplayedSeconds(-1), lastDisplayedCount(-1),
+      deliveryGoal(SetDeliveryGoalBasedOnDifficulty()) {}
 
 StageState::~StageState() {
     tileSet = nullptr;
@@ -274,7 +290,7 @@ void StageState::LoadAssets() {
 
     GameObject* goalObj = new GameObject();
     goalText = new Text(*goalObj, "recursos/font/neodgm.ttf", 28, Text::BLENDED,
-                        "Objetivo: " + std::to_string(kDeliveryGoal), hudWhite);
+                        "Objetivo: " + std::to_string(deliveryGoal), hudWhite);
     goalObj->AddComponent(goalText);
     goalObj->box.x = kHudX;
     goalObj->box.y = 10.0f + kHudLineHeight;
@@ -315,7 +331,7 @@ void StageState::Update(float dt) {
 
     int deliveryCount = delivery ? delivery->deliveryCount : 0;
 
-    if (deliveryCount >= kDeliveryGoal) {
+    if (deliveryCount >= deliveryGoal) {
         gameEnded = true;
         if (endBannerText && endBannerObj) {
             SDL_Color green = { 60, 220, 90, 255 };
@@ -354,7 +370,19 @@ void StageState::Render() {
     RenderArray();
 }
 
-void StageState::Pause() {}
+void StageState::Pause() {
+    // Encerra tudo que toca em loop (música e som do motor/freio do
+    // jogador) antes de ir para VictoryState/GameOverState — sem isso o
+    // Game::Run() apenas pausa a StageState (ela continua viva, empilhada
+    // por baixo), e os canais do Mix continuam tocando indefinidamente.
+    backgroundMusic.Stop();
+
+    if (Vehicle* vehicle = Vehicle::player) {
+        vehicle->engineSound.Stop();
+        vehicle->brakeSound.Stop();
+        vehicle->crashSound.Stop();
+    }
+}
 
 void StageState::Resume() {}
 

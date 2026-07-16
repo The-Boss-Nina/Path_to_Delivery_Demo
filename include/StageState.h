@@ -39,4 +39,5 @@ private:
     bool gameEnded;
     int lastDisplayedSeconds;
     int lastDisplayedCount;
+    int deliveryGoal;
 };

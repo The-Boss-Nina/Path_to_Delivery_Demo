@@ -21,6 +21,8 @@ public:
     State& GetCurrentState() const;
     State& GetState() const;
 
+    int dificulty;
+
 private:
     Game(const char* title, int width, int height);
     static Game* instance;

@@ -19,7 +19,8 @@ Game& Game::GetInstance(const char* title, int width, int height) {
 }
 
 Game::Game(const char* title, int width, int height)
-    : window(nullptr),
+    : dificulty(0),
+      window(nullptr),
       renderer(nullptr),
       storedState(nullptr),
       stateStack(),
