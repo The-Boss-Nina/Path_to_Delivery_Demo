@@ -349,6 +349,15 @@ void StageState::Update(float dt) {
             endBannerObj->box.x = 640.0f - endBannerObj->box.w / 2.0f;
         }
         Game::GetInstance().Push(new GameOverState());
+    } else if (Vehicle::player == nullptr) {
+        gameEnded = true;
+        if (endBannerText && endBannerObj) {
+            SDL_Color red = { 220, 60, 60, 255 };
+            endBannerText->SetColor(red);
+            endBannerText->SetText("Seu veiculo foi destruido! Voce perdeu.");
+            endBannerObj->box.x = 640.0f - endBannerObj->box.w / 2.0f;
+        }
+        Game::GetInstance().Push(new GameOverState());
     }
 
     int seconds = static_cast<int>(std::ceil(timeRemaining));

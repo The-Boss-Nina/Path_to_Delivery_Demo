@@ -204,11 +204,11 @@ void Vehicle::NotifyCollision(GameObject& other) {
 void Vehicle::Damage(int damage) {
     hp -= damage;
     if (hp <= 0) {
-        if (isPlayer) {
+        hp = 0;
+        if (isPlayer && player != nullptr) {
             Camera::Unfollow();
             player = nullptr;
             deathTimer.Restart();
-            associated.RequestDelete();
         }
         return;
     }
