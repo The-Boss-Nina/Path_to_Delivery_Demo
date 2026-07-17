@@ -25,7 +25,7 @@ void GameOverState::LoadAssets() {
     // recursos/img/game_over.png é 768x768 — encolhe para caber na altura da
     // tela (720) preservando a proporção, e centraliza horizontalmente.
     GameObject* imageObj = new GameObject();
-    SpriteRenderer* imageSr = new SpriteRenderer(*imageObj, "recursos/img/game_over.png", 1, 1);
+    SpriteRenderer* imageSr = new SpriteRenderer(*imageObj, "recursos/img/game_over.jpeg", 1, 1);
     imageSr->SetCameraFollower(true);
     imageObj->AddComponent(imageSr);
     imageObj->box.w = 720.0f;

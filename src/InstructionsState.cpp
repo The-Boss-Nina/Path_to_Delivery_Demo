@@ -3,7 +3,6 @@
 #include "GameObject.h"
 #include "InputManager.h"
 #include "SpriteRenderer.h"
-#include "Text.h"
 #include "VehicleSelectState.h"
 #include <SDL.h>
 #include <string>
@@ -28,24 +27,6 @@ GameObject* CreateFullscreenImage(State& state, const std::string& file) {
     return object;
 }
 
-GameObject* CreateButtonText(State& state,
-                             const std::string& label,
-                             float centerX,
-                             float y) {
-    GameObject* obj = new GameObject();
-    SDL_Color white = {255, 255, 255, 255};
-    Text* text = new Text(*obj,
-                          "recursos/font/neodgm.ttf",
-                          30,
-                          Text::BLENDED,
-                          label,
-                          white);
-    obj->AddComponent(text);
-    obj->box.x = centerX - obj->box.w / 2.0f;
-    obj->box.y = y;
-    state.AddObject(obj);
-    return obj;
-}
 }  // namespace
 
 InstructionsState::InstructionsState()
@@ -58,10 +39,6 @@ void InstructionsState::LoadAssets() {
     CreateFullscreenImage(*this, "recursos/img/guia_de_interface.jpeg");
     CreateFullscreenImage(*this, "recursos/img/como_jogar.jpeg");
     CreateFullscreenImage(*this, "recursos/img/historia.jpeg");
-
-    // Textos dos botões. Os fundos são desenhados no Render().
-    CreateButtonText(*this, "<  VOLTAR", 190.0f, 649.0f);   // índice 3
-    CreateButtonText(*this, "PROXIMO  >", 1090.0f, 649.0f); // índice 4
 }
 
 void InstructionsState::Start() {
@@ -122,7 +99,7 @@ void InstructionsState::Update(float) {
         return;
     }
 
-    // Setas, A/D, ESPAÇO e ENTER funcionam junto com os botões visuais.
+    // Setas, A/D, ESPAÇO e ENTER funcionam junto com as áreas de clique.
     if (input.KeyPress(RIGHT_ARROW_KEY) ||
         input.KeyPress(SDLK_d) ||
         input.KeyPress(SDLK_SPACE) ||
@@ -146,32 +123,8 @@ void InstructionsState::Render() {
 
     SDL_Renderer* renderer = Game::GetInstance().GetRenderer();
 
-    // Fundo dos botões em preto com borda roxa, seguindo o estilo das telas.
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 220);
-    SDL_RenderFillRect(renderer, &kBackButton);
-    SDL_RenderFillRect(renderer, &kNextButton);
-
-    const bool overBack = IsMouseOverBack();
-    const bool overNext = IsMouseOverNext();
-
-    SDL_SetRenderDrawColor(renderer,
-                           overBack ? 255 : 111,
-                           overBack ? 0 : 42,
-                           overBack ? 220 : 167,
-                           255);
-    SDL_RenderDrawRect(renderer, &kBackButton);
-
-    SDL_SetRenderDrawColor(renderer,
-                           overNext ? 255 : 111,
-                           overNext ? 0 : 42,
-                           overNext ? 220 : 167,
-                           255);
-    SDL_RenderDrawRect(renderer, &kNextButton);
-
-    // Textos dos botões.
-    objectArray[3]->Render();
-    objectArray[4]->Render();
+    // kBackButton/kNextButton permanecem invisíveis: usados apenas como
+    // áreas de clique (ver IsMouseOverBack/IsMouseOverNext), sem desenho.
 
     // Indicador da página: 1/3, 2/3 ou 3/3.
     const int dotY = 674;

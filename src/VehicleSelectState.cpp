@@ -20,7 +20,7 @@ void VehicleSelectState::Start() {
 void VehicleSelectState::LoadAssets() {
     // Usa exatamente a tela ESCOLHA enviada para o projeto.
     GameObject* bg = new GameObject();
-    SpriteRenderer* bgSr = new SpriteRenderer(*bg, "recursos/img/escolha.png", 1, 1);
+    SpriteRenderer* bgSr = new SpriteRenderer(*bg, "recursos/img/escolha.jpeg", 1, 1);
     bgSr->SetCameraFollower(true);
     bg->AddComponent(bgSr);
     bg->box.x = 0;

@@ -25,7 +25,7 @@ void VictoryState::LoadAssets() {
     // recursos/img/vitoria.png é 768x768 — encolhe para caber na altura da
     // tela (720) preservando a proporção, e centraliza horizontalmente.
     GameObject* imageObj = new GameObject();
-    SpriteRenderer* imageSr = new SpriteRenderer(*imageObj, "recursos/img/vitoria.png", 1, 1);
+    SpriteRenderer* imageSr = new SpriteRenderer(*imageObj, "recursos/img/vitoria.jpeg", 1, 1);
     imageSr->SetCameraFollower(true);
     imageObj->AddComponent(imageSr);
     imageObj->box.w = 720.0f;

@@ -159,7 +159,7 @@ void StageState::LoadAssets() {
     // Mapa da primeira fase usando o tileset de ruas do Path to Delivery.
     GameObject* mapObject = new GameObject();
     tileSet = new TileSet(512, 512, "recursos/img/v2RuasSpritesheet.png", 512, 512);
-    tileMap = new TileMap(*mapObject, "recursos/map/cidade_criada.txt", tileSet);
+    tileMap = new TileMap(*mapObject, "recursos/map/cidade2.txt", tileSet);
     mapObject->AddComponent(tileMap);
     mapObject->box.x = 0;
     mapObject->box.y = 0;
@@ -214,11 +214,11 @@ void StageState::LoadAssets() {
         playerFrameCountW = 4;
         playerFrameCountH = 3;
     } else if (selectedVehicle == VehicleType::UNO) {
-        playerSpritePath = "recursos/img/uno_final_entrega.png";
+        playerSpritePath = "recursos/img/uno_luz.png";
         playerFrameCountW = 4;
         playerFrameCountH = 4;
     } else if (selectedVehicle == VehicleType::HARLEY) {
-        playerSpritePath = "recursos/img/harley_final_entrega.png";
+        playerSpritePath = "recursos/img/harley_luz.png";
         playerFrameCountW = 4;
         playerFrameCountH = 4;
     } else if (selectedVehicle == VehicleType::MUSTANG) {
